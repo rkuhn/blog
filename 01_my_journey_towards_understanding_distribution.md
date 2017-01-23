@@ -136,6 +136,8 @@ On the other hand I did not find a true formalization of the Actor Model into a 
 
 My current takeaway is that we should first try out composable sub-Actors and any other such model that others can think up. And then we take it further from there.
 
+_For the second part please see [Composing Actor Behavior](02_composing_actor_behavior.md)_
+
 #Comments
 
 Please leave comments [on the pull request](https://github.com/rkuhn/blog/pull/1) or [on specific lines](https://github.com/rkuhn/blog/pull/1/files).
