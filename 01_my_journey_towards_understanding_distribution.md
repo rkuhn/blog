@@ -53,7 +53,7 @@ case class AuthSuccess(session: ActorRef[SessionCommand]) extends AuthResponse
 case class AuthFailure(reason: String) extends AuthResponse
 ~~~
 
-Modeling a protocol like this and exposing only an `ActorRef[Authenticate]` to clients does not only inhibit them from sending the entirely wrong message type, it also expresses the dependency of the session availability upon successful authentication—without having an `ActorRef[Sessioncommand]` the compiler will not accept the sending of such messages.
+Modeling a protocol like this and exposing only an `ActorRef[Authenticate]` to clients does not only inhibit them from sending the entirely wrong message type, it also expresses the dependency of the session availability upon successful authentication—without having an `ActorRef[SessionCommand]` the compiler will not accept the sending of such messages.
 
 ##Tangent: Protocols
 
