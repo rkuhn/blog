@@ -1,4 +1,4 @@
-#Roland Kuhn’s Blog
+# Roland Kuhn’s Blog
 
 Copyright © Roland Kuhn 2016 _(Though the presentation of this blog is blatantly copied from the [Letters from Klang](https://github.com/viktorklang/blog#letters-from-klang).)_
 
