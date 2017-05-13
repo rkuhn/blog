@@ -1,12 +1,12 @@
 Roland Kuhn, Jan 21, 2017
 
-#Composing Actor Behavior
+# Composing Actor Behavior
 
 In my [previous post](01_my_journey_towards_understanding_distribution.md) I took you on a journey towards a better understanding of distributed computing. The journey ended—somewhat dissatisfactorily—with the insight that due to its inherent properties the Actor model is very well suited for describing distributed systems, but reasoning about it is more difficult than for π-calculus. As @nestmann has [pointed out in the comments](https://github.com/rkuhn/blog/pull/1#issuecomment-266908620) there is a connection between these aspects, π-calculus is not in the same “class of distributability” as the Actor model, Join-calculus, or the localized π-calculus.
 
 Since I do not feel competent to contribute to the theoretical discourse on these topics, I have worked on a concrete implementation of the sub-actor concept mentioned at the end of the previous post. The result is an expressive toolbox for Actor behaviors that should combine well with an adaptation of @alcestes’ [lchannels](https://github.com/alcestes/lchannels) library: generating message classes that represent the succession of protocol steps in a session type.
 
-##The basic abstraction
+## The basic abstraction
 
 Since the term “sub-actor” is a bit awkward—also typographically—I will call the basic building block a _process_. Every process describes a sequence of operations (e.g. awaiting a message, querying the environment, etc.) and is hosted by an Actor. These Actors are not directly visible in the programming abstraction, the implementation comes from the library and contains an interpreter for multiple concurrent processes. A very simple first program illustrates the basic setup:
 
@@ -110,7 +110,7 @@ Running [this process](https://github.com/rkuhn/akka-typed-process-demo/blob/587
 
 So far we have discussed the basic operations of running process steps sequentially, concurrently, or in parallel. With one addition we will be able to formulate our own abstractions on top of this foundation.
 
-##Sequential composition
+## Sequential composition
 
 The main concern with compositionality of typed processes has been discussed in the previous post under [the path towards compositionality](https://github.com/rkuhn/blog/blob/master/01_my_journey_towards_understanding_distribution.md#the-path-towards-compositionality): if a process is characterized by the type of messages it can receive, then doing two different activities in sequence implies having first one type and then another. Typestate (see [the paper from 1986](http://dl.acm.org/citation.cfm?id=10693) by R.E. Strom and S. Yemini) may be able to model such a transition, but no mainstream programming language includes this capability today. We work around this restriction by introducing `opCall`. This operation spawns the given process within the same host Actor, but instead of running concurrently the caller is suspended until the called process has run to completion and returned its computed value. The called process is free to use a differently typed `ActorRef` for itself, allowing interactions that do not affect the caller in any way—the called process is encapsulated just as a function call that only returns its final value.
 
@@ -164,7 +164,7 @@ val sayName =
 
 The trick here is that the `ActorRef` contains the main process’ name as the last segment of its `ActorPath`. This snippet also shows how to start an infinite server process after doing some initialization.
 
-##Adding parallelism
+## Adding parallelism
 
 The basic functionality for allowing parallel execution is already present in the form of `opSpawn` but that operator ignores the spawned process’ result value. In order to speed up lengthy computations we should be able to build an abstraction that can turn a list of process descriptions into a list of results, running computations in parallel. This is an interesting example because it corroborates the completeness of the provided process algebra.
 
@@ -220,7 +220,7 @@ val main =
 
 Parallelism itself is enabled by spawning the processes that compute the answers in child Actors, then we use `opParallel` to ask both of them, returning the ordered list of responses. One noteworthy aspect here is that we set a timeout of 1 second for each of the ask operations—if any one of these expires the whole Actor hosting these processes will fail. This choice of linked failure has been made because allowing concurrency (of a specifically restricted kind) within an Actor is already stretching it—allowing processes to fail independently would make Actors distributed on the inside, and that way lies madness.
 
-##Current status and future plans
+## Current status and future plans
 
 The process DSL presented in this blog post is currently an open [pull request](https://github.com/akka/akka/pull/22087) towards Akka, awaiting some naming discussions (in particular on the “op” prefix for the built-in operations). I am very happy with how the encoding has worked out and am reasonably confident that a very similar process DSL will soon land in an Akka release near you. If you want to play around with the current code, please clone the [akka-typed-process-demo](https://github.com/rkuhn/akka-typed-process-demo) repository. It also contains source jars for the embedded implementation jar. **For eclipse users: please ensure that you select a 2.12 Scala installation for compilation, otherwise you will encounter binary incompatibility issues.**
 
@@ -228,6 +228,6 @@ An aspect that is not discussed in this post is that the proposed DSL also conta
 
 The next step will be the integration of this process DSL with automatically derived protocol message types, allowing an already useful subset of the static protocol verification that is possible with the Scribble language. While not guaranteeing perfect safety, it will make many aspects of Actor interactions accessible to rigorous compile-time checks.
 
-#Comments
+# Comments
 
 Please leave comments [on the pull request](https://github.com/rkuhn/blog/pull/2) or [on specific lines](https://github.com/rkuhn/blog/pull/2/files).
