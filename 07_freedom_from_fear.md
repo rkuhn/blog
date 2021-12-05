@@ -1,3 +1,5 @@
+_(deutsche Version [siehe unten](#freiheit-von-angst))_
+
 # Freedom from Fear
 
 Recently, the phrase «your freedom ends where mine begins» has been used more frequently in the context of the pandemic.
